@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "../lib/ProtectedRoutes.jsx";
+
 
 //Pages
 import LandingPage from "../pages/LandingPage.jsx";
@@ -28,7 +30,7 @@ const AppRouter = () => {
         </Route>
 
         {/*Dashboard Routes*/}
-        <Route path="/app" element={<DashboardLayout />}>
+        <Route path="/app" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path=":id" element={<ComponentDetail />} />
         </Route>
       </Routes>

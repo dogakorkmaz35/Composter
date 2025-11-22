@@ -6,3 +6,11 @@ export const authClient = createAuthClient({
     credentials: "include",
   },
 });
+
+await authClient.signOut({
+  fetchOptions: {
+    onSuccess: () => {
+      router.push("/");
+    },
+  },
+});
