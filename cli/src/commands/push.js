@@ -57,7 +57,6 @@ export async function pushComponent(category, title, filepath) {
         // Handle success
         if (res.ok) {
             console.log(`Component '${title}' pushed successfully under category '${category}'!`);
-            console.log("ID:", body?.component?.id);
             return;
         }
 
