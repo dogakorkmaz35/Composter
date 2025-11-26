@@ -29,6 +29,8 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/categories", categoryRouter);
 //Create Component Route
 app.use("/api/components", componentRouter);
+//Pull Component Route
+app.use("/api/components", componentRouter);
 
 
 //Get Current User Session

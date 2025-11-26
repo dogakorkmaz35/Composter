@@ -39,3 +39,35 @@ export async function pushComponent(req, res) {
   }
 }
 
+
+export async function pullComponent(req, res){
+  try{
+    const { category, title } = req.params;
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Find the category
+    const cat = await prisma.category.findFirst({
+      where:{ name: category, userId }
+    });
+
+    if(!cat){
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    // Find the component under that category
+    const component = await prisma.component.findFirst({
+      where: { title, categoryId: cat.id, userId }
+    });
+
+    if (!component) {
+      return res.status(404).json({ error: "Component not found" });
+    }
+
+    return res.status(200).json({ component });
+    
+  } catch(err){
+    console.error("Pull Component Error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
