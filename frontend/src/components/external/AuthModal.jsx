@@ -14,9 +14,7 @@ const AuthModal = ({ open, mode = 'login', onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Use currentTarget to ensure we get the <form> element even when this
-    // handler is triggered as the form's submit event.
-    const form = e.currentTarget;
+    const form = e.target;
     const data = Object.fromEntries(new FormData(form));
     onSubmit?.(data, mode);
   };
@@ -63,8 +61,7 @@ const AuthModal = ({ open, mode = 'login', onClose, onSubmit }) => {
             </div>
 
             <div className="flex items-center justify-between"> 
-              {/* make this a submit button so the form's submit event is used */}
-              <Button type="submit" className='-translate-x-4'>{isSignup ? 'Sign up' : 'Log in'}</Button>
+              <Button onClick={handleSubmit} className='-translate-x-4'>{isSignup ? 'Sign up' : 'Log in'}</Button>
               <button type="button" onClick={onClose} className="text-sm text-white cursor-pointer mx-1">Cancel</button>
             </div>
           </form>

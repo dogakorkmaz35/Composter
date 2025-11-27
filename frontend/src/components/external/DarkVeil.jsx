@@ -123,15 +123,27 @@ export default function DarkVeil({
 
     const start = performance.now();
     let frame = 0;
+    const targetFPS = 30; // Throttle to 30 FPS for better performance
+    const frameInterval = 1000 / targetFPS;
+    let lastFrameTime = performance.now();
 
     const loop = () => {
-      program.uniforms.uTime.value = ((performance.now() - start) / 1000) * speed;
-      program.uniforms.uHueShift.value = hueShift;
-      program.uniforms.uNoise.value = noiseIntensity;
-      program.uniforms.uScan.value = scanlineIntensity;
-      program.uniforms.uScanFreq.value = scanlineFrequency;
-      program.uniforms.uWarp.value = warpAmount;
-      renderer.render({ scene: mesh });
+      const currentTime = performance.now();
+      const elapsed = currentTime - lastFrameTime;
+
+      // Only render if enough time has passed (30 FPS throttle)
+      if (elapsed >= frameInterval) {
+        program.uniforms.uTime.value = ((currentTime - start) / 1000) * speed;
+        program.uniforms.uHueShift.value = hueShift;
+        program.uniforms.uNoise.value = noiseIntensity;
+        program.uniforms.uScan.value = scanlineIntensity;
+        program.uniforms.uScanFreq.value = scanlineFrequency;
+        program.uniforms.uWarp.value = warpAmount;
+        renderer.render({ scene: mesh });
+
+        lastFrameTime = currentTime - (elapsed % frameInterval);
+      }
+
       frame = requestAnimationFrame(loop);
     };
 
