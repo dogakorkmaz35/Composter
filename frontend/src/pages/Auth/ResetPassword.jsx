@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/composter-logos/full_logo.png";
 
 const ResetPassword = () => {
     const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ const ResetPassword = () => {
             <div className="relative z-10 w-full max-w-md mx-4">
                 {/* Logo */}
                 <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-                    <img src={logo} alt="Composter" className="h-10 w-10 object-contain" />
+                    <img src={logo} alt="Composter" className="h-12 w-12 object-contain rounded-xl" />
                     <span className="text-2xl font-bold text-foreground">Composter</span>
                 </Link>
 

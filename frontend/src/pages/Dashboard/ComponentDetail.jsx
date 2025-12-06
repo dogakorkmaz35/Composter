@@ -6,6 +6,7 @@ import { dracula } from "@codesandbox/sandpack-themes";
 import { Button } from "@/components/ui/button";
 import CodeBlock from "../../components/ui/CodeBlock.jsx";
 import { cn } from "@/lib/utils";
+import ComposterLoading from "@/components/ui/ComposterLoading.jsx";
 
 // Copyable code block component
 const CopyableCodeBlock = ({ code, label }) => {
@@ -217,8 +218,8 @@ root.render(
 
   if (loading) {
     return (
-      <div className="text-center py-20">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <ComposterLoading size={48} className="mb-4" />
         <p className="text-muted-foreground">Loading component...</p>
       </div>
     );

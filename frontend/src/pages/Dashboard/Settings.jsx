@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { User, Camera } from "lucide-react";
 import Card from "../../components/ui/Card.jsx";
 import { Button } from "@/components/ui/button";
+import ComposterLoading from "@/components/ui/ComposterLoading.jsx";
 
 const Settings = () => {
     const [profile, setProfile] = useState({
@@ -69,8 +70,9 @@ const Settings = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-muted-foreground">Loading...</div>
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <ComposterLoading size={48} className="mb-4" />
+                <p className="text-muted-foreground">Loading...</p>
             </div>
         );
     }

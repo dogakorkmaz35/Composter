@@ -7,7 +7,8 @@ import { AnimatedGroup } from '@/components/ui/animated-group'
 import { AnimatedBeam } from '@/components/ui/animated-beam'
 import Folder from '@/components/ui/folder'
 import { cn } from '@/lib/utils'
-import logo from '@/assets/logo.png'
+// @ts-ignore
+import ComposterHover from '@/components/ui/ComposterHover.jsx'
 
 const transitionVariants = {
     item: {
@@ -170,8 +171,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="md:col-span-2">
                         <Link to="/" className="flex items-center gap-2 mb-4">
-                            <img src={logo} alt="Composter" className="h-8 w-8 object-contain" />
-                            <span className="text-xl font-bold text-foreground">Composter</span>
+                            <ComposterHover size={32} />
                         </Link>
                         <p className="text-muted-foreground text-sm max-w-sm mb-6">
                             Your personal vault for React components. Upload, organize, and retrieve instantly with CLI and dashboard.
@@ -499,7 +499,7 @@ const HeroHeader = () => {
 const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center gap-2', className)}>
-            <img src={logo} alt="Composter" className="h-8 w-8 object-contain" />
+            <ComposterHover size={32} />
             <span className="text-xl font-bold text-foreground">Composter</span>
         </div>
     )

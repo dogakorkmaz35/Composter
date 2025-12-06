@@ -93,7 +93,7 @@ Save components once, then pull them into any project using the CLI or web dashb
         {
           title: "Pull components",
           description: "Pull any component from your vault into your current project.",
-          code: "composter pull buttons PrimaryButton",
+          code: "composter pull <CATEGORY_NAME> <COMPONENT_NAME> <PATH_TO_IMPORT>",
         },
       ],
       manual: [
@@ -120,17 +120,17 @@ Save components once, then pull them into any project using the CLI or web dashb
       {
         title: "Create a category",
         description: "Categories help you organize related components together.",
-        code: "composter mkcat buttons",
+        code: "composter mkcat <CATEGORY_NAME>",
       },
       {
         title: "Push your first component",
         description: "Upload a component file to your vault.",
-        code: "composter push buttons ./src/components/Button.jsx",
+        code: "composter push <CATEGORY_NAME> <COMPONENT_NAME> <FILE_PATH_TO_COMPONENT>",
       },
       {
         title: "Pull into another project",
         description: "Download the component into your current working directory.",
-        code: "composter pull buttons Button",
+        code: "composter pull <CATEGORY_NAME> <COMPONENT_NAME> <PATH_TO_IMPORT>",
       },
     ],
   },
@@ -179,14 +179,14 @@ composter pull buttons PrimaryButton`,
 composter list buttons`,
   },
 
-  "cli-update": {
-    title: "Update Components",
-    description: "Replace an existing component with a new version.",
-    code: `composter update <category> <file-path>
+//   "cli-update": {
+//     title: "Update Components",
+//     description: "Replace an existing component with a new version.",
+//     code: `composter update <category> <file-path>
 
-# Example
-composter update buttons ./src/Button.jsx`,
-  },
+// # Example
+// composter update buttons ./src/Button.jsx`,
+//   },
 
   // ============================================
   // DASHBOARD SECTION

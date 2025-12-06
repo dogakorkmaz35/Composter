@@ -2,7 +2,7 @@ import React from "react";
 import { Github, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSession } from "../../lib/auth-client.ts";
-import logo from "@/assets/logo.png";
+import ComposterHover from "@/components/ui/ComposterHover";
 
 export default function Topbar() {
     const { data: session } = useSession();
@@ -12,7 +12,7 @@ export default function Topbar() {
             <div className="flex items-center justify-between h-full px-4 lg:px-6">
                 {/* Mobile Logo */}
                 <Link to="/" className="flex lg:hidden items-center gap-2">
-                    <img src={logo} alt="Composter" className="h-6 w-6 object-contain" />
+                    <ComposterHover size={24} />
                     <span className="text-sm font-semibold text-foreground">Composter</span>
                 </Link>
 

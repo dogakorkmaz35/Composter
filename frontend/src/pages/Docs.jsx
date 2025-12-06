@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client.ts";
 import { sidebarNav, docsContent, ctaSection } from "@/data/docsContent";
-import logo from "@/assets/logo.png";
+import ComposterHover from "@/components/ui/ComposterHover";
 
 // Code block component with copy button
 const CodeBlock = ({ code, showLineNumbers = true }) => {
@@ -359,7 +359,7 @@ const Docs = () => {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <Link to="/" className="flex items-center gap-2.5">
-              <img src={logo} alt="Composter" className="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
+              <ComposterHover size={28} />
               <span className="text-sm sm:text-base font-semibold text-foreground">Composter</span>
             </Link>
 

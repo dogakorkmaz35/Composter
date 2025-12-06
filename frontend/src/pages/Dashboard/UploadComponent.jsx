@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Plus, X, File, Folder, FolderOpen, ChevronDown, ChevronRight, Package, AlertCircle, Check, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, File, Folder, FolderOpen, ChevronDown, ChevronRight, Package, AlertCircle, Check, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import Card from "../../components/ui/Card.jsx";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import ComposterLoading from "@/components/ui/ComposterLoading.jsx";
 
 // Get language from file extension
 const getLanguageFromPath = (path) => {
@@ -680,9 +681,9 @@ const UploadComponent = () => {
                   },
                 }}
                 loading={
-                  <div className="flex items-center justify-center h-full bg-[#1e1e1e] text-muted-foreground">
-                    <Loader2 size={20} className="animate-spin mr-2" />
-                    Loading editor...
+                  <div className="flex flex-col items-center justify-center h-full bg-[#1e1e1e] text-muted-foreground gap-3">
+                    <ComposterLoading size={32} />
+                    <span>Loading editor...</span>
                   </div>
                 }
               />
@@ -697,10 +698,10 @@ const UploadComponent = () => {
           </Button>
           <Button type="submit" disabled={isSubmitting || success}>
             {isSubmitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin mr-2" />
+              <span className="flex items-center gap-2">
+                <ComposterLoading size={16} />
                 Uploading...
-              </>
+              </span>
             ) : (
               "Upload Component"
             )}

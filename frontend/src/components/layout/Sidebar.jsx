@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { Home, Box, Settings, LogOut } from "lucide-react";
 import { signOut } from "../../lib/auth-client.ts";
-import logo from "@/assets/logo.png";
+import ComposterHover from "@/components/ui/ComposterHover";
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Sidebar = () => {
             <div className="flex flex-col h-full py-6">
                 {/* Logo Area */}
                 <Link to="/" className="flex items-center gap-2.5 px-6 mb-8 hover:opacity-80 transition-opacity">
-                    <img src={logo} alt="Composter" className="h-8 w-8 object-contain" />
+                    <ComposterHover size={32} />
                     <div>
                         <h1 className="text-lg font-semibold text-foreground">Composter</h1>
                         <p className="text-[10px] text-muted-foreground -mt-0.5">Developer Vault</p>

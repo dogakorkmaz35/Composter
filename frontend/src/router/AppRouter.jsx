@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import ComposterLoading from "../components/ui/ComposterLoading.jsx";
 
 // Lazy load pages for better performance
 const LandingPage = lazy(() => import("../pages/LandingPage.jsx"));
@@ -22,7 +23,7 @@ const Settings = lazy(() => import("../pages/Dashboard/Settings.jsx"));
 // Simple loading state that matches the dark theme
 const PageLoader = () => (
   <div className="w-screen h-screen bg-[#050505] flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+    <ComposterLoading size={64} />
   </div>
 );
 
