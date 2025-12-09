@@ -4,13 +4,16 @@ import { Pool } from "pg"
 import dotenv from "dotenv";
 dotenv.config();
 
+// Determine environment
+const isProduction = process.env.NODE_ENV === "production";
+const AUTH_BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 
 const auth = betterAuth({
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
   }),
 
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: AUTH_BASE_URL,
 
   emailAndPassword: {
     enabled: true,
@@ -33,24 +36,25 @@ const auth = betterAuth({
   },
 
   advanced: {
-    useSecureCookies: true,
+    // Only use secure cookies in production (HTTPS)
+    useSecureCookies: isProduction,
     cookies: {
       session_token: {
-        name: "__Secure-better-auth.session_token",
+        name: isProduction ? "__Secure-better-auth.session_token" : "better-auth.session_token",
         attributes: {
           httpOnly: true,
-          sameSite: "none",
-          secure: true,
+          sameSite: isProduction ? "none" : "lax",
+          secure: isProduction,
           path: "/",
           maxAge: 60 * 60 * 24 * 30, // 30 days
         }
       },
       session_data: {
-        name: "__Secure-better-auth.session_data", 
+        name: isProduction ? "__Secure-better-auth.session_data" : "better-auth.session_data",
         attributes: {
           httpOnly: true,
-          sameSite: "none",
-          secure: true,
+          sameSite: isProduction ? "none" : "lax",
+          secure: isProduction,
           path: "/",
           maxAge: 60 * 60 * 24 * 30, // 30 days
         }
@@ -59,7 +63,12 @@ const auth = betterAuth({
   },
 
   plugins: [
-    jwt()
+    jwt({
+      // JWT issuer/audience must match what we verify against in authMiddleware
+      issuer: AUTH_BASE_URL,
+      audience: AUTH_BASE_URL,
+      expirationTime: "30d", // 30 days to match session
+    })
   ],
 })
 

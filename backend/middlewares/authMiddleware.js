@@ -1,9 +1,15 @@
 import { jwtVerify, createRemoteJWKSet } from "jose";
 import { fromNodeHeaders } from "better-auth/node";
 import auth from "../auth/auth.js";
+import dotenv from "dotenv";
+dotenv.config();
 
+// Use environment variable for the auth URL (same as Better Auth baseURL)
+const AUTH_BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+
+// Create JWKS fetcher - this fetches the public keys from your auth server
 const JWKS = createRemoteJWKSet(
-  new URL("http://localhost:3000/api/auth/jwks")
+  new URL(`${AUTH_BASE_URL}/api/auth/jwks`)
 );
 
 export async function authMiddleware(req, res, next) {
@@ -31,14 +37,15 @@ export async function authMiddleware(req, res, next) {
 
   try {
     const { payload } = await jwtVerify(token, JWKS, {
-      issuer: "http://localhost:3000",
-      audience: "http://localhost:3000",
+      issuer: AUTH_BASE_URL,
+      audience: AUTH_BASE_URL,
     });
 
     // Better Auth puts user ID in the subject (sub)
     req.user = { id: payload.sub };
     next();
   } catch (err) {
+    console.error("JWT verification failed:", err.message);
     return res.status(401).json({ error: "Unauthorized - Invalid token" });
   }
 }
