@@ -268,11 +268,14 @@ export function createMcpServer() {
     },
     async ({ category }) => {
       try {
-        const res = await apiRequest(`/components/list-by-category?category=${encodeURIComponent(category)}`, { method: "GET" });
+        // Trim whitespace and newlines from category name
+        const cleanCategory = category.trim();
+        
+        const res = await apiRequest(`/components/list-by-category?category=${encodeURIComponent(cleanCategory)}`, { method: "GET" });
 
         if (res.status === 404) {
           return {
-            content: [{ type: "text", text: `Category "${category}" not found.` }],
+            content: [{ type: "text", text: `Category "${cleanCategory}" not found.` }],
           };
         }
 
@@ -288,7 +291,7 @@ export function createMcpServer() {
 
         if (components.length === 0) {
           return {
-            content: [{ type: "text", text: `No components found in category "${category}".` }],
+            content: [{ type: "text", text: `No components found in category "${cleanCategory}".` }],
           };
         }
 
@@ -297,7 +300,7 @@ export function createMcpServer() {
         ).join("\n");
 
         return {
-          content: [{ type: "text", text: `Components in "${category}":\n\n${formatted}` }],
+          content: [{ type: "text", text: `Components in "${cleanCategory}":\n\n${formatted}` }],
         };
       } catch (err) {
         return {
@@ -317,14 +320,18 @@ export function createMcpServer() {
     },
     async ({ category, title }) => {
       try {
+        // Trim whitespace and newlines
+        const cleanCategory = category.trim();
+        const cleanTitle = title.trim();
+        
         const res = await apiRequest(
-          `/components?category=${encodeURIComponent(category)}&title=${encodeURIComponent(title)}`,
+          `/components?category=${encodeURIComponent(cleanCategory)}&title=${encodeURIComponent(cleanTitle)}`,
           { method: "GET" }
         );
 
         if (res.status === 404) {
           return {
-            content: [{ type: "text", text: `Component "${title}" not found in category "${category}".` }],
+            content: [{ type: "text", text: `Component "${cleanTitle}" not found in category "${cleanCategory}".` }],
           };
         }
 
@@ -340,7 +347,7 @@ export function createMcpServer() {
 
         if (!component) {
           return {
-            content: [{ type: "text", text: `Component "${title}" not found.` }],
+            content: [{ type: "text", text: `Component "${cleanTitle}" not found.` }],
           };
         }
 
