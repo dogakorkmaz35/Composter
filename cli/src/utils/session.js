@@ -8,7 +8,23 @@ export function saveSession(sessionData) {
 
 export function loadSession() {
   if (!fs.existsSync(SESSION_PATH)) return null;
-  return JSON.parse(fs.readFileSync(SESSION_PATH, "utf-8"));
+  
+  try {
+    const session = JSON.parse(fs.readFileSync(SESSION_PATH, "utf-8"));
+    
+    // Check if session is expired
+    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+      console.log("Session expired. Please run 'composter login' again.");
+      clearSession();
+      return null;
+    }
+    
+    return session;
+  } catch (error) {
+    console.error("Invalid session file. Please run 'composter login' again.");
+    clearSession();
+    return null;
+  }
 }
 
 export function clearSession() {

@@ -61,11 +61,15 @@ export async function login() {
     token = json.token;
   }
 
-  // Step 4 — Save session + jwt locally
+  // Step 4 — Save session + jwt locally with expiration
+  const expiresAt = new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)).toISOString(); // 30 days
   saveSession({
     cookies: cookie,
-    jwt: token
+    jwt: token,
+    createdAt: new Date().toISOString(),
+    expiresAt: expiresAt
   });
 
   console.log("\nLogged in successfully!");
+  console.log(`Session expires: ${expiresAt}`);
 }
