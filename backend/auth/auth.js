@@ -34,28 +34,24 @@ const auth = betterAuth({
 
   advanced: {
     useSecureCookies: true,
-    crossSubDomainCookies: {
-      enabled: true,
-    },
-  },
-
-  cookies: {
-    session_token: {
-      name: "__Secure-better-auth.session_token",
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        path: "/",
-      }
-    },
-    session_data: {
-      name: "__Secure-better-auth.session_data", 
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        path: "/",
+    cookies: {
+      session_token: {
+        name: "__Secure-better-auth.session_token",
+        attributes: {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+          path: "/",
+        }
+      },
+      session_data: {
+        name: "__Secure-better-auth.session_data", 
+        attributes: {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+          path: "/",
+        }
       }
     }
   },
