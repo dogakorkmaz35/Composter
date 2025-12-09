@@ -1,31 +1,30 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getLocalUser } from "../lib/auth.js";
+import { createMcpServer } from "../lib/factory.js";
+import { loadSession, getBaseUrl } from "../lib/auth.js";
 
-const originalLog = console.log;
+// Redirect console.log to stderr (MCP uses stdout for protocol communication)
 console.log = (...args) => console.error(...args);
 
 async function main() {
   try {
-    const dotenv = await import("dotenv");
-    const path = await import("path");
-    
-    dotenv.default.config({ 
-      path: path.resolve(process.cwd(), "mcp/.env"),
-      debug: false 
-    });
+    // Check if user is logged in via CLI
+    const session = loadSession();
+    if (!session) {
+      console.error("❌ No session found. Please run 'composter login' first.");
+      process.exit(1);
+    }
 
-    const { createMcpServer } = await import("../lib/factory.js");
+    const baseUrl = getBaseUrl();
+    console.error(`🚀 Composter MCP Server starting...`);
+    console.error(`📡 API: ${baseUrl}`);
 
-    const userId = await getLocalUser();
-    console.error(`✅ Authenticated as user ID: ${userId}`);
-
-    const server = createMcpServer(userId);
+    // Create and start MCP server
+    const server = createMcpServer();
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    
-    console.error('🚀 Composter MCP server running on stdio');
 
+    console.error("✅ Composter MCP server running on stdio");
   } catch (error) {
     console.error("❌ Fatal Error:", error.message);
     process.exit(1);

@@ -1,8 +1,8 @@
 {
   "name": "composter-cli",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
-  "description": "Your personal vault for React components. Push, pull, and sync reusable components across projects — like shadcn/ui but for YOUR code. Includes MCP server for AI assistants.",
+  "description": "Your personal vault for React components. Push, pull, and sync reusable components across projects — like shadcn/ui but for YOUR code.",
   "main": "src/index.js",
   "bin": {
     "composter": "./bin/composter.js"
@@ -20,13 +20,7 @@
     "component-library",
     "code-sharing",
     "developer-tools",
-    "productivity",
-    "mcp",
-    "ai-tools",
-    "claude",
-    "cursor",
-    "copilot",
-    "model-context-protocol"
+    "productivity"
   ],
   "author": "binit2-1",
   "license": "MIT",
@@ -42,11 +36,9 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.23.0",
     "commander": "^14.0.2",
     "dotenv": "^16.4.5",
     "inquirer": "^13.0.1",
-    "node-fetch": "^3.3.2",
-    "zod": "^3.23.0"
+    "node-fetch": "^3.3.2"
   }
 }

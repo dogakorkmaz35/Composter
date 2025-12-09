@@ -314,48 +314,41 @@ npm dependencies are tracked with versions from your `package.json`:
 
 ## 🤖 AI Integration (MCP)
 
-Composter includes a built-in Model Context Protocol (MCP) server that lets AI assistants interact with your vault directly.
+Let AI assistants like **Claude**, **Cursor**, and **GitHub Copilot** access your vault via MCP.
 
-### Quick Setup
+### Install MCP Server
 
 ```bash
-# One command to configure your AI assistant
-npx composter-cli@latest mcp init --client claude
+npm install -g composter-mcp
 ```
 
-**Supported clients:**
-- `claude` — Claude Desktop
-- `cursor` — Cursor IDE
-- `vscode` — VS Code with Copilot
-- `windsurf` — Windsurf IDE
+### Configure Your AI Assistant
 
-### MCP Commands
+**Claude Desktop** — Add to `~/.config/claude/claude_desktop_config.json`:
 
-| Command | Description |
-|---------|-------------|
-| `composter mcp init --client <name>` | Configure MCP for an AI assistant |
-| `composter mcp serve` | Start MCP server directly (testing) |
-| `composter mcp info` | Show MCP configuration info |
+```json
+{
+  "mcpServers": {
+    "composter": {
+      "command": "npx",
+      "args": ["composter-mcp"]
+    }
+  }
+}
+```
 
-### Options
+**Cursor** — Add to `.cursor/mcp.json`:
 
-```bash
-# Configure for Claude Desktop
-composter mcp init --client claude
-
-# Configure for Cursor
-composter mcp init --client cursor
-
-# Use localhost backend (development)
-composter mcp init --client claude --dev
-
-# Show manual config instructions
-composter mcp info
+```json
+{
+  "composter": {
+    "command": "npx",
+    "args": ["composter-mcp"]
+  }
+}
 ```
 
 ### Available AI Tools
-
-Once configured, your AI assistant can use these tools:
 
 | Tool | Description |
 |------|-------------|
@@ -364,25 +357,13 @@ Once configured, your AI assistant can use these tools:
 | `list_components` | List components in a category |
 | `read_component` | Read full source code of a component |
 
-### Example AI Prompts
+### Example Prompts
 
-After setup, you can ask your AI:
 - *"Search my Composter vault for button components"*
 - *"What categories do I have in Composter?"*
 - *"Read the DataTable component from my ui category"*
-- *"List all components in my hooks category"*
 
-### Development Mode
-
-For local development with `localhost:3000` backend:
-
-```bash
-# Initialize with dev flag
-composter mcp init --client claude --dev
-
-# Or set environment variable
-COMPOSTER_DEV=true composter mcp serve
-```
+📖 [Full MCP Documentation](https://www.npmjs.com/package/composter-mcp)
 
 ---
 

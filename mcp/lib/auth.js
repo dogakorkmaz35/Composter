@@ -1,45 +1,78 @@
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { createRemoteJWKSet, jwtVerify } from "jose";
 
+// Session path (same as CLI)
 const SESSION_PATH = path.join(os.homedir(), ".config", "composter", "session.json");
-const JWKS_URL = new URL("http://localhost:3000/api/auth/jwks");
-const JWKS = createRemoteJWKSet(JWKS_URL);
 
-export async function getLocalUser() {
+// Get base URL - supports both dev and production
+export function getBaseUrl() {
+  // Check for explicit env var first
+  if (process.env.COMPOSTER_API_URL) {
+    return process.env.COMPOSTER_API_URL;
+  }
+  // Check for dev mode
+  if (process.env.COMPOSTER_DEV === "true" || process.env.NODE_ENV === "development") {
+    return "http://localhost:3000/api";
+  }
+  // Default to production
+  return "https://composter.onrender.com/api";
+}
+
+// Load session from CLI's session file
+export function loadSession() {
   if (!fs.existsSync(SESSION_PATH)) {
-    throw new Error("No session found. Please run 'composter login' in your terminal.");
+    return null;
   }
 
-  let sessionData;
   try {
     const raw = fs.readFileSync(SESSION_PATH, "utf-8");
-    sessionData = JSON.parse(raw);
-  } catch (err) {
-    throw new Error("Corrupt session file. Please run 'composter login' again.");
+    const session = JSON.parse(raw);
+
+    // Check if session is expired
+    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+      return null;
+    }
+
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+// Get JWT token from session
+export function getAuthToken() {
+  const session = loadSession();
+  if (!session) {
+    throw new Error("No session found. Please run 'composter login' first.");
   }
 
-  const token = sessionData.jwt || sessionData.token || sessionData.accessToken;
-
+  const token = session.jwt || session.token || session.accessToken;
   if (!token) {
-    throw new Error("Session file missing token. Please login again.");
+    throw new Error("Session file missing token. Please run 'composter login' again.");
   }
 
-  try {
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer: "http://localhost:3000",
-      audience: "http://localhost:3000",
-    });
+  return token;
+}
 
-    return payload.sub;
-  } catch (err) {
-    if (err.code === "ERR_JWT_EXPIRED") {
-      throw new Error("Session expired. Please run 'composter login' to refresh.");
+// Verify session is valid by making a test API call
+export async function verifySession() {
+  const token = getAuthToken();
+  const baseUrl = getBaseUrl();
+
+  const res = await fetch(`${baseUrl.replace('/api', '')}/api/me`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error("Session expired. Please run 'composter login' again.");
     }
-    if (err.code === "ECONNREFUSED") {
-      throw new Error("Cannot contact backend to verify token. Is your server running on localhost:3000?");
-    }
-    throw new Error("Authentication failed: " + err.message);
+    throw new Error(`Authentication failed: ${res.statusText}`);
   }
+
+  const data = await res.json();
+  return data?.user?.id || data?.session?.userId;
 }

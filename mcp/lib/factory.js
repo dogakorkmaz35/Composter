@@ -1,88 +1,235 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import prisma from '../../backend/prisma/prisma.js';
+import { getAuthToken, getBaseUrl } from "./auth.js";
 
-export function createMcpServer(userId) {
-  if (!userId) {
-    throw new Error("Security Error: Cannot create MCP server without a User ID.");
-  }
+// API request helper with JWT auth
+async function apiRequest(path, options = {}) {
+  const token = getAuthToken();
+  const baseUrl = getBaseUrl();
 
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+    ...options.headers,
+  };
+
+  const res = await fetch(`${baseUrl}${path}`, {
+    ...options,
+    headers,
+  });
+
+  return res;
+}
+
+export function createMcpServer() {
   const server = new McpServer({
-    name: "Composter Vault",
+    name: "Composter",
     version: "1.0.0",
   });
 
+  // Tool: Search components
   server.tool(
     "search_components",
-    "Search for React components by title or category name. Returns a list of matching components with their IDs and categories.",
-    { 
-      query: z.string().describe("Search term for component title or category name") 
+    "Search for React components in your Composter vault by title or category name. Returns matching components with IDs and categories.",
+    {
+      query: z.string().describe("Search term for component title or category name"),
     },
     async ({ query }) => {
-      const components = await prisma.component.findMany({
-        where: {
-          AND: [
-            { userId: userId },
-            {
-              OR: [
-                { title: { contains: query, mode: "insensitive" } },
-                { category: { name: { contains: query, mode: "insensitive" } } }
-              ]
-            }
-          ]
-        },
-        include: { category: true },
-        take: 10,
-      });
+      try {
+        const res = await apiRequest(`/components/search?q=${encodeURIComponent(query)}`, { method: "GET" });
 
-      if (components.length === 0) {
-        return { content: [{ type: "text", text: "No components found matching that query." }] };
+        if (!res.ok) {
+          const error = await res.json().catch(() => ({}));
+          return {
+            content: [{ type: "text", text: `Error searching: ${error.message || error.error || res.statusText}` }],
+          };
+        }
+
+        const data = await res.json();
+        const components = data.components || [];
+
+        if (components.length === 0) {
+          return {
+            content: [{ type: "text", text: "No components found matching that query." }],
+          };
+        }
+
+        const formatted = components.map((c) =>
+          `- **${c.title}** (Category: ${c.category?.name || "unknown"}) [ID: ${c.id}]`
+        ).join("\n");
+
+        return {
+          content: [{ type: "text", text: `Found ${components.length} component(s):\n\n${formatted}` }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error: ${err.message}` }],
+        };
       }
-
-      const formatted = components.map(c => 
-        `- [ID: ${c.id}] ${c.title} (Category: ${c.category.name})`
-      ).join("\n");
-
-      return {
-        content: [{ type: "text", text: `Found the following components:\n${formatted}` }],
-      };
     }
   );
 
+  // Tool: List categories
   server.tool(
-    "read_component",
-    "Read the full source code of a specific React component by its name. Returns the component code, category, and creation date.",
-    { 
-      componentName: z.string().describe("The name of the component to read") 
-    },
-    async ({ componentName }) => {
-      const component = await prisma.component.findFirst({
-        where: { 
-          title: { contains: componentName, mode: "insensitive" },
-          userId: userId 
-        },
-        include: { category: true }
-      });
+    "list_categories",
+    "List all categories in your Composter vault.",
+    {},
+    async () => {
+      try {
+        const res = await apiRequest("/categories", { method: "GET" });
 
-      if (!component) {
-        return { 
-          content: [{ type: "text", text: `Component "${componentName}" not found or you do not have permission to view it.` }] 
+        if (!res.ok) {
+          const error = await res.json().catch(() => ({}));
+          return {
+            content: [{ type: "text", text: `Error: ${error.message || error.error || res.statusText}` }],
+          };
+        }
+
+        const data = await res.json();
+        const categories = data.categories || [];
+
+        if (categories.length === 0) {
+          return {
+            content: [{ type: "text", text: "No categories found. Create one with 'composter mkcat <name>'." }],
+          };
+        }
+
+        const formatted = categories.map((c) => `- ${c.name}`).join("\n");
+
+        return {
+          content: [{ type: "text", text: `Your categories:\n\n${formatted}` }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error: ${err.message}` }],
         };
       }
+    }
+  );
 
-      const output = `
-Filename: ${component.title}
-Category: ${component.category.name}
-Created: ${component.createdAt.toISOString()}
+  // Tool: List components in category
+  server.tool(
+    "list_components",
+    "List all components in a specific category.",
+    {
+      category: z.string().describe("The category name to list components from"),
+    },
+    async ({ category }) => {
+      try {
+        const res = await apiRequest(`/components/list-by-category?category=${encodeURIComponent(category)}`, { method: "GET" });
 
-\`\`\`javascript
-${component.code}
-\`\`\`
-`;
+        if (res.status === 404) {
+          return {
+            content: [{ type: "text", text: `Category "${category}" not found.` }],
+          };
+        }
 
-      return {
-        content: [{ type: "text", text: output }],
-      };
+        if (!res.ok) {
+          const error = await res.json().catch(() => ({}));
+          return {
+            content: [{ type: "text", text: `Error: ${error.message || error.error || res.statusText}` }],
+          };
+        }
+
+        const data = await res.json();
+        const components = data.components || [];
+
+        if (components.length === 0) {
+          return {
+            content: [{ type: "text", text: `No components found in category "${category}".` }],
+          };
+        }
+
+        const formatted = components.map((c) =>
+          `- **${c.title}** (created: ${new Date(c.createdAt).toLocaleDateString()})`
+        ).join("\n");
+
+        return {
+          content: [{ type: "text", text: `Components in "${category}":\n\n${formatted}` }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error: ${err.message}` }],
+        };
+      }
+    }
+  );
+
+  // Tool: Read component
+  server.tool(
+    "read_component",
+    "Read the full source code of a React component from your vault. Returns the code, category, dependencies, and creation date.",
+    {
+      category: z.string().describe("The category name the component belongs to"),
+      title: z.string().describe("The title/name of the component to read"),
+    },
+    async ({ category, title }) => {
+      try {
+        const res = await apiRequest(
+          `/components?category=${encodeURIComponent(category)}&title=${encodeURIComponent(title)}`,
+          { method: "GET" }
+        );
+
+        if (res.status === 404) {
+          return {
+            content: [{ type: "text", text: `Component "${title}" not found in category "${category}".` }],
+          };
+        }
+
+        if (!res.ok) {
+          const error = await res.json().catch(() => ({}));
+          return {
+            content: [{ type: "text", text: `Error: ${error.message || error.error || res.statusText}` }],
+          };
+        }
+
+        const data = await res.json();
+        const component = data.component;
+
+        if (!component) {
+          return {
+            content: [{ type: "text", text: `Component "${title}" not found.` }],
+          };
+        }
+
+        // Parse code - could be JSON (multi-file) or string (single file)
+        let codeOutput = "";
+        try {
+          const files = JSON.parse(component.code);
+          codeOutput = Object.entries(files)
+            .map(([path, content]) => `### ${path}\n\`\`\`tsx\n${content}\n\`\`\``)
+            .join("\n\n");
+        } catch {
+          codeOutput = `\`\`\`tsx\n${component.code}\n\`\`\``;
+        }
+
+        // Format dependencies
+        let depsOutput = "";
+        if (component.dependencies && Object.keys(component.dependencies).length > 0) {
+          const deps = Object.entries(component.dependencies)
+            .map(([pkg, ver]) => `- ${pkg}: ${ver}`)
+            .join("\n");
+          depsOutput = `\n\n**Dependencies:**\n${deps}`;
+        }
+
+        const output = `# ${component.title}
+
+**Category:** ${category}
+**Created:** ${new Date(component.createdAt).toLocaleDateString()}
+${depsOutput}
+
+## Source Code
+
+${codeOutput}`;
+
+        return {
+          content: [{ type: "text", text: output }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error: ${err.message}` }],
+        };
+      }
     }
   );
 
