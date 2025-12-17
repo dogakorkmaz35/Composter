@@ -6,7 +6,7 @@ import { mkcat } from "./commands/mkcat.js";
 import { listCategories } from "./commands/listCat.js";
 import { pushComponent } from "./commands/push.js";
 import { pullComponent } from "./commands/pull.js";
-import { initVscode } from "./commands/init.js";
+import { initMcp } from "./commands/init.js";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -25,15 +25,10 @@ program
   .action(login);
 
 program
-  .command("init <editor>")
-  .description("Initialize MCP configuration for your editor (vscode)")
-  .action((editor) => {
-    if (editor.toLowerCase() === "vscode") {
-      initVscode();
-    } else {
-      console.error("❌ Only 'vscode' is supported currently");
-      process.exit(1);
-    }
+  .command("init [client]")
+  .description("Shows how to configure MCP for your AI assistant")
+  .action((client) => {
+    initMcp(client);
   });
 
 program
