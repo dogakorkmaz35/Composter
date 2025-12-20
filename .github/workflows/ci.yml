@@ -25,6 +25,9 @@ jobs:
     
     - name: Install API dependencies
       run: cd api && npm ci
+      env:
+        DATABASE_URL: "postgresql://user:password@localhost:5432/composter"
+        BETTER_AUTH_SECRET: "test-secret-key-for-ci-build-only"
     
     - name: Install Frontend dependencies
       run: cd frontend && npm ci
