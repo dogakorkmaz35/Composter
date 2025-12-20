@@ -7,28 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- MCP integration for AI assistants (VS Code, Cursor, Windsurf)
-- Live component preview with Sandpack
-- Better Auth for secure authentication
+## [1.0.0] - 2025-06-21
 
-### Changed
-- Extended session expiry to 30 days
-- Improved natural language understanding in MCP tools
+### Added
+- **Initial Release:** Complete launch of the Composter ecosystem.
+- **MCP Integration:** Full support for AI assistants (Cursor, Windsurf, VS Code).
+- **Live Preview:** Sandpack integration for rendering components in the dashboard.
+- **CLI Tool:** Commands for `push`, `pull`, and `login`.
+- **Web Dashboard:** Visual interface to browse and search components.
+- **Secure Auth:** Better Auth implementation with 30-day session expiry.
+- **Database:** PostgreSQL schema with Prisma ORM.
 
 ### Fixed
-- CORS issues with cross-domain requests
-- Session token trimming in MCP server
-
-## [1.0.0] - 2024-12-09
-
-### Added
-- Initial release
-- CLI tool for component management
-- Web dashboard for browsing components
-- PostgreSQL database with Prisma ORM
-- Better Auth integration
-- Component categories and search
-
-[Unreleased]: https://github.com/binit2-1/Composter/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/binit2-1/Composter/releases/tag/v1.0.0
+- Resolved CORS issues with cross-domain requests.
+- Addressed session token trimming in MCP server.
