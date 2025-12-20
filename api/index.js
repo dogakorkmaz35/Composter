@@ -59,6 +59,8 @@ app.get("/api/me", async (req, res) => {
   return res.json(session);
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`);
+// });
+
+export default app;
