@@ -3,28 +3,20 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/composter-logos/full_logo.png";
-import { requestPasswordReset } from "@/lib/auth-client";
 
 const ResetPassword = () => {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
-    const [error, setError] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        const { data, error } = await requestPasswordReset({
-            email: email,
-            redirectTo: `${import.meta.env.VITE_CLIENT_URL}/new-password`
-        });
-        setLoading(false);
-        if (error) {
-            setError(true);
-        } else {
+        // TODO: Implement reset logic
+        setTimeout(() => {
+            setLoading(false);
             setSent(true);
-            setError(false);
-        }
+        }, 1000);
     };
 
     return (
@@ -54,11 +46,6 @@ const ResetPassword = () => {
                     </Link>
 
                     <div className="mb-8">
-                        {error && (
-                            <div className="py-3 text-red-400">
-                                Something went wrong, please try again later.
-                            </div>
-                        )}
                         <h1 className="text-3xl font-medium mb-3 text-balance">
                             Reset Password
                         </h1>

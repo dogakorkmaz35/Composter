@@ -2,8 +2,6 @@ import { betterAuth } from "better-auth"
 import { jwt } from "better-auth/plugins"
 import { Pool } from "pg"
 import dotenv from "dotenv";
-import { sendEmail } from "../lib/sendEmail.js";
-import { emailContent } from "../lib/constants/emailContent.js";
 dotenv.config();
 
 // Determine environment
@@ -19,17 +17,7 @@ const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false,
-    sendResetPassword: async ({user, url, token}, request) => {
-      sendEmail({
-        to: user.email,
-        subject: "Composter Password Reset",
-        html: emailContent(url)
-      })
-    },
-    onPasswordReset: async ({user}, request) => {
-      console.info(`Password reset for user: ${user.email} successful.`);
-    }
+    requireEmailVerification: false
   },
 
   trustedOrigins: [
