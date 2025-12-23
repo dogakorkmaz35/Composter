@@ -31,7 +31,6 @@ export const sidebarNav = [
       { id: "cli-push", label: "Push Components" },
       { id: "cli-pull", label: "Pull Components" },
       { id: "cli-list", label: "List Components" },
-      { id: "cli-update", label: "Update Components" },
     ],
   },
   {
@@ -178,15 +177,6 @@ composter pull buttons PrimaryButton`,
 # Example
 composter list buttons`,
   },
-
-   "cli-update": {
-     title: "Update Components",
-     description: "Replace an existing component with a new version.",
-     code: `composter update <category> <file-path>
-
- # Example
- composter update buttons ./src/Button.jsx`,
-   },
 
   // ============================================
   // DASHBOARD SECTION
