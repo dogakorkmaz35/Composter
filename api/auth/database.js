@@ -1,4 +1,6 @@
 import { Pool } from "pg";
+import dotenv from "dotenv";
+dotenv.config();
 
 const database = await (async () => {
   const pool = new Pool({

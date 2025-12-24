@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins";
 import dotenv from "dotenv";
-import database from "./database";
+import database from "./database.js";
 dotenv.config();
 
 // Determine environment
